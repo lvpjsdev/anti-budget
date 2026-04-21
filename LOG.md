@@ -14,3 +14,15 @@
 ### 02:41 — Структура проекта
 - Создан GitHub репо: https://github.com/lvpjsdev/anti-budget-app
 - Инициализирован long-project-manager workspace
+
+## 2026-04-21 — Daily Digest
+
+**Tasks completed today:**
+- ✅ task-001: Vite + React + TS + Tailwind + TMA SDK scaffold (PR #1 merged)
+- ✅ task-002: IndexedDB data layer (PR #2 merged)
+
+**Epic-001 progress:** 2/4 tasks done
+
+**Next:** task-003 (Telegram SDK), task-004 (routing)
+
+**No blockers.**
