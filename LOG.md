@@ -15,6 +15,19 @@
 - Создан GitHub репо: https://github.com/lvpjsdev/anti-budget-app
 - Инициализирован long-project-manager workspace
 
+### 00:55 — Лендинг финиширован
+- English текст
+- Confirmation message добавлен
+
+### 00:40 — Carrd лендинг готов
+- https://antibudget.carrd.co/
+- Google Form для сбора email
+
+### 00:15 — Reddit пост удалён
+- Пост в r/personalfinance удалён (модераторы или новый аккаунт)
+- Свежий аккаунт — нужно подождать 1-2 дня
+- Пробуем завтра r/NoSpend или r/frugal
+
 ## 2026-04-21 — Daily Digest
 
 **Tasks completed today:**
