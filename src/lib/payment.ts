@@ -1,5 +1,12 @@
 import WebApp from '@twa-dev/sdk';
 
+// Configuration - set these for production
+const CONFIG = {
+  // Your Cloudflare Worker URL after deployment
+  workerUrl: '', // e.g., 'https://anti-budget-stars.your-name.workers.dev'
+  // Or leave empty for demo mode
+};
+
 // Telegram Stars payment integration for Anti-Budget
 // Premium tiers and purchase flow
 
@@ -67,21 +74,65 @@ export function hasPremium(): boolean {
   return !!getPremiumStatus().tier;
 }
 
+// Verify premium with backend (production)
+async function verifyPremiumWithBackend(userId: string): Promise<boolean> {
+  if (!CONFIG.workerUrl) return false;
+  
+  try {
+    const response = await fetch(`${CONFIG.workerUrl}/api/premium?user_id=${userId}`);
+    const data = await response.json();
+    return data.premium === true;
+  } catch {
+    return false;
+  }
+}
+
 // Purchase a premium tier using Telegram Stars
-// In production, this calls your backend which creates an invoice via Bot API
+// In production, this calls your Cloudflare Worker which creates an invoice via Bot API
 export async function purchasePremium(tier: PremiumTier): Promise<boolean> {
   try {
-    // In production:
-    // 1. Call backend: fetch('/api/create-invoice', { tierId })
-    // 2. Backend creates invoice via Telegram Bot API
-    // 3. Returns invoice_link
-    // 4. Frontend opens: WebApp.openInvoice(invoiceLink, callback)
-    // 5. Telegram sends webhook to backend on success
-    // 6. Backend grants premium, sends confirmation
+    // Get Telegram user info
+    const user = WebApp.initDataUnsafe?.user;
+    const userId = user?.id?.toString() || 'demo-user';
     
-    // For now: DEMO MODE — grants premium locally for testing
-    // Replace this block with real Stars purchase flow
+    // Check if we have a backend configured
+    if (CONFIG.workerUrl) {
+      // PRODUCTION MODE: Create invoice via Worker
+      const response = await fetch(`${CONFIG.workerUrl}/api/create-invoice`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier_id: tier.id, user_id: userId })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        WebApp.showAlert(`Error: ${error.error || 'Failed to create invoice'}`);
+        return false;
+      }
+      
+      const { invoiceLink } = await response.json();
+      
+      // Open invoice in Telegram
+      WebApp.openInvoice(invoiceLink, (status: string) => {
+        if (status === 'paid') {
+          // Verify payment
+          setTimeout(async () => {
+            const verified = await verifyPremiumWithBackend(userId);
+            if (verified) {
+              const expiresAt = tier.id === 'premium_monthly'
+                ? Date.now() + 30 * 24 * 60 * 60 * 1000
+                : null;
+              setPremiumStatus(tier.id, expiresAt);
+              WebApp.showAlert(`✅ ${tier.name} activated!`);
+            }
+          }, 2000);
+        }
+      });
+      
+      return true;
+    }
     
+    // DEMO MODE: Grant premium locally for testing (when no backend)
     const confirmed = confirm(
       `💎 Purchase ${tier.name} for ${tier.price} Stars?\n\n` +
       `Features:\n${tier.features.map(f => '• ' + f).join('\n')}\n\n` +
@@ -90,10 +141,9 @@ export async function purchasePremium(tier: PremiumTier): Promise<boolean> {
 
     if (confirmed) {
       // Grant premium (demo mode)
-      // In production, this would be set after webhook confirmation
       const expiresAt = tier.id === 'premium_monthly'
         ? Date.now() + 30 * 24 * 60 * 60 * 1000
-        : null; // Lifetime = no expiry
+        : null;
       
       setPremiumStatus(tier.id, expiresAt);
       
@@ -117,6 +167,7 @@ export async function purchasePremium(tier: PremiumTier): Promise<boolean> {
     }
   } catch (err) {
     console.error('Purchase failed:', err);
+    WebApp.showAlert(`Error: ${err}`);
   }
   return false;
 }
@@ -124,4 +175,9 @@ export async function purchasePremium(tier: PremiumTier): Promise<boolean> {
 // Clear premium status
 export function clearPremiumStatus(): void {
   localStorage.removeItem('anti-budget-premium');
+}
+
+// Configure the worker URL (call this after deploying)
+export function configureWorker(url: string): void {
+  CONFIG.workerUrl = url;
 }
