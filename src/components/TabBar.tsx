@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { hasPremium } from '../lib/payment';
 
 const tabs = [
   { path: '/logger', icon: '➕', label: 'Log' },
@@ -8,6 +9,8 @@ const tabs = [
 ];
 
 export default function TabBar() {
+  const isPremium = hasPremium();
+  
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-tg-secondary border-t border-tg-hint z-10">
       <div className="flex justify-around items-center h-16 max-w-md mx-auto">
@@ -21,7 +24,12 @@ export default function TabBar() {
               }`
             }
           >
-            <span className="text-xl">{tab.icon}</span>
+            <span className="text-xl relative">
+              {tab.icon}
+              {tab.path === '/settings' && isPremium && (
+                <span className="absolute -top-1 -right-1 text-xs">⭐</span>
+              )}
+            </span>
             <span className="text-xs mt-0.5">{tab.label}</span>
           </NavLink>
         ))}
