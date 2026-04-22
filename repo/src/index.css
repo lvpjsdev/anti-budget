@@ -31,3 +31,7 @@ body {
   background-color: var(--tg-bg);
   color: var(--tg-text);
 }
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
