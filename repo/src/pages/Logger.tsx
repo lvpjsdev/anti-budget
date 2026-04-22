@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import WebApp from '@twa-dev/sdk'
 import { addTransaction } from '../db'
 import type { Transaction } from '../db/schema'
@@ -7,6 +8,7 @@ export default function Logger() {
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
+  const navigate = useNavigate()
 
   const handleSave = async () => {
     const amountNum = parseFloat(amount)
@@ -38,6 +40,7 @@ export default function Logger() {
 
     WebApp.HapticFeedback.notificationOccurred('success')
     WebApp.showAlert('added!')
+    navigate('/stats')
   }
 
   return (

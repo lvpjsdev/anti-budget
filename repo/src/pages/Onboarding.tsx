@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import WebApp from '@twa-dev/sdk'
 
 const CATEGORIES = [
@@ -13,6 +14,7 @@ type CategoryId = typeof CATEGORIES[number]['id']
 
 export default function Onboarding() {
   const [selected, setSelected] = useState<CategoryId | null>(null)
+  const navigate = useNavigate()
 
   const handleSelect = (id: CategoryId) => {
     setSelected(id)
@@ -20,7 +22,7 @@ export default function Onboarding() {
     setTimeout(() => {
       localStorage.setItem('selectedCategory', id)
       WebApp.BackButton.show()
-      window.location.href = '/logger'
+      navigate('/logger')
     }, 300)
   }
 
