@@ -1,0 +1,17 @@
+name = "anti-budget-stars"
+compatibility_date = "2024-04-22"
+
+# Vars (set via wrangler secret)
+# [vars]
+# TELEGRAM_BOT_TOKEN = ""
+# PREMIUM_SECRET = ""
+
+# KV for premium storage
+[[kv_namespaces]]
+binding = "PREMIUM"
+id = "" # Fill after creation
+
+# Routes (optional - for custom domain)
+# routes = [
+#   { pattern = "your-worker.your-subdomain.workers.dev", zone_name = "your-domain.com" }
+# ]

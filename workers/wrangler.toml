@@ -1,17 +1,12 @@
 name = "anti-budget-stars"
 compatibility_date = "2024-04-22"
-
-# Vars (set via wrangler secret)
-# [vars]
-# TELEGRAM_BOT_TOKEN = ""
-# PREMIUM_SECRET = ""
+main = "stars-worker.js"
 
 # KV for premium storage
 [[kv_namespaces]]
 binding = "PREMIUM"
-id = "" # Create via: wrangler kv:namespace create PREMIUM
+id = "0191a96b6e5f447c94ae20abca858207"
 
-# Routes
-routes = [
-  { pattern = "your-worker.your-subdomain.workers.dev", zone_name = "your-domain.com" }
-]
+# Route for workers.dev (auto-registered on first deploy)
+# After first deploy, your Worker URL will be:
+# https://anti-budget-stars.<your-account>.workers.dev
