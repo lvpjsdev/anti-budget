@@ -1,24 +1,37 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { collectDiagnostics, logError } from './lib/diagnostics';
 
 // Initialize Telegram WebApp
-import WebApp from '@twa-dev/sdk'
+const WebApp = (window as any).Telegram?.WebApp;
 
-// Expand the WebApp to full height
-WebApp.ready()
-WebApp.expand()
+console.log('Anti-Budget mounting...', { WebApp: WebApp, WebAppReady: WebApp });
+console.log('Diagnostics:', collectDiagnostics());
 
-// Register service worker for PWA capabilities
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(console.error)
-  })
+if (WebApp) {
+  WebApp.ready();
+  WebApp.expand();
+} else {
+  console.warn('Telegram WebApp not available');
+  logError('Telegram WebApp not available');
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+// Global error handler
+window.addEventListener('error', (e) => logError(e.error || e.message));
+window.addEventListener('unhandledrejection', (e) => logError(e.reason));
+
+// Render app
+const root = document.getElementById('root');
+if (root) {
+  createRoot(root).render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+}
+
+// Remove static fallback once React mounts
+const preRoot = document.getElementById('pre-root');
+if (preRoot) preRoot.remove();

@@ -6,9 +6,12 @@ import Logger from './pages/Logger';
 import ShameStats from './pages/ShameStats';
 import History from './pages/History';
 import Settings from './pages/Settings';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const { settings, loading } = useSettings();
+
+  console.log('App render', { loading, settings })
 
   if (loading) {
     return (
@@ -22,20 +25,22 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/onboarding" element={<Onboarding />} />
-        {/* Redirect root to appropriate page based on onboarding status */}
-        <Route path="/" element={
-          hasSelectedCategory ? <Navigate to="/logger" replace /> : <Navigate to="/onboarding" replace />
-        } />
-        {/* Protected routes with layout */}
-        <Route element={<Layout />}>
-          <Route path="/logger" element={<Logger />} />
-          <Route path="/stats" element={<ShameStats />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/onboarding" element={<Onboarding />} />
+          {/* Redirect root to appropriate page based on onboarding status */}
+          <Route path="/" element={
+            hasSelectedCategory ? <Navigate to="/logger" replace /> : <Navigate to="/onboarding" replace />
+          } />
+          {/* Protected routes with layout */}
+          <Route element={<Layout />}>
+            <Route path="/logger" element={<Logger />} />
+            <Route path="/stats" element={<ShameStats />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

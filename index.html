@@ -13,9 +13,29 @@
     <title>Anti-Budget</title>
     <!-- Telegram WebApp script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="telegram:verification" content="anti-budget-verify-123">
+    
+    <!-- Unregister any existing service workers to avoid stale cache -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          for (let reg of regs) reg.unregister();
+        });
+      }
+    </script>
   </head>
   <body>
+    <!-- Static fallback: visible immediately, removed by React -->
+    <div id="pre-root" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#000);z-index:9999;font-size:18px;">
+      Loading Anti-Budget...
+    </div>
     <div id="root"></div>
+    <noscript>
+      <div style="padding: 20px; text-align: center;">
+        <h2>Anti-Budget requires JavaScript</h2>
+        <p>Please enable JavaScript to use this app.</p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
